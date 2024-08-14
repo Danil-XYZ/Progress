@@ -8,7 +8,7 @@ import androidx.room.Query
 import androidx.room.Update
 
 @Dao
-interface DataDAO {
+interface MyDataDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun addData(data: DataModel)
@@ -20,6 +20,6 @@ interface DataDAO {
     fun readData(): LiveData<List<DataModel>>
 
     @Query("DELETE FROM DataModel WHERE id=:id")
-    fun deleteData(id: Long)
+    suspend fun deleteData(id: Long)
 
 }

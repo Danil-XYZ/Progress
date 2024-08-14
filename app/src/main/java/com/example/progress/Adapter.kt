@@ -17,6 +17,17 @@ class Adapter(
     private val listener: OnItemClickListener
 ) : RecyclerView.Adapter<Adapter.ViewHolder>() { // Сюда передаётся ViewHolder
 
+    fun updateData(newData: List<DataModel>) {
+        dataList.clear()
+        dataList.addAll(newData)
+        notifyDataSetChanged()
+    }
+
+    fun removeItem(position: Int) {
+        dataList.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view: View = LayoutInflater.from(parent.context) // Создаётся новый view
             .inflate(R.layout.item, parent, false) // который наполняет item.xml

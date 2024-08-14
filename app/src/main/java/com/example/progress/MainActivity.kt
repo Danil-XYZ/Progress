@@ -4,22 +4,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-
 
 
 class MainActivity : AppCompatActivity(), Adapter.OnItemClickListener {
 
     private lateinit var recyclerView: RecyclerView //
-    private var list = arrayListOf<DataModel>()
-    private var adapter = Adapter(list, this) // Создаем новый адаптер с данными из dataList
-    val db by lazy { DataDatabase.getDatabase(this) }
+    private var adapter = Adapter(arrayListOf(), this) // Создаем новый адаптер с данными из dataList
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,24 +27,15 @@ class MainActivity : AppCompatActivity(), Adapter.OnItemClickListener {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = this@MainActivity.adapter
         }
-
-
     }
 
     override fun onResume() {
         super.onResume()
 
-        try {
-            db.dataDao().readData().observe(this) {
-                list.clear()
-                if (it.isNotEmpty()) {
-                    list.addAll(it)
-                    adapter.notifyDataSetChanged()
-                }
+        viewModel.allData.observe(this) { data ->
+            data.let {
+                adapter.updateData(data)
             }
-
-        } catch (e: Exception) {
-            Log.e("tesst", e.message.toString())
         }
     }
 
@@ -67,14 +53,8 @@ class MainActivity : AppCompatActivity(), Adapter.OnItemClickListener {
             Log.e("tesst", "id ${adapter.getItemId(position)}")
 
             val id = adapter.getItemId(position)
-
-            list.removeAt(position)
-            adapter.notifyItemRemoved(position)
-
-            CoroutineScope(Dispatchers.IO).launch {
-                delay(300)
-                db.dataDao().deleteData(id)
-            }
+            adapter.removeItem(position)
+            viewModel.deleteData(id)
 
         } catch (e: Exception) {
             Log.e("tesst", e.toString())
