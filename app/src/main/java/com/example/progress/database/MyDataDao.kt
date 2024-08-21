@@ -1,4 +1,4 @@
-package com.example.progress
+package com.example.progress.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao

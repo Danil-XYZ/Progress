@@ -6,36 +6,37 @@ import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.fragment.app.commit
 
 
-class MainActivity : AppCompatActivity(), Adapter.OnItemClickListener {
+class MainActivity : AppCompatActivity() {
 
-    private lateinit var recyclerView: RecyclerView //
-    private var adapter = Adapter(arrayListOf(), this) // Создаем новый адаптер с данными из dataList
+
     private val viewModel: MainViewModel by viewModels()
+    private lateinit var recyclerViewFragment: RecyclerViewFragment
+    private lateinit var listFragment: ListFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        recyclerView = findViewById(R.id.recyclerView) // Находим RecyclerView в макете
+        // Создаем и добавляем RecyclerViewFragment в контейнер
+        recyclerViewFragment = RecyclerViewFragment()
+        recyclerViewFragment.setViewModel(viewModel)
 
-
-        recyclerView.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = this@MainActivity.adapter
+        listFragment = ListFragment()
+        supportFragmentManager.commit {
+            replace(R.id.fragment_container, listFragment)
         }
-    }
 
-    override fun onResume() {
-        super.onResume()
-
+        // Подписываемся на изменения данных и обновляем фрагмент
         viewModel.allData.observe(this) { data ->
-            data.let {
-                adapter.updateData(data)
-            }
+            recyclerViewFragment.updateData(data)
+        }
+
+
+        viewModel.listData.observe(this) { data ->
+            listFragment.updateData(data)
         }
     }
 
@@ -43,21 +44,5 @@ class MainActivity : AppCompatActivity(), Adapter.OnItemClickListener {
         startActivity(Intent(this, EditActivity::class.java))
     }
 
-    override fun onEditClick(position: Int) {
-        TODO("Not yet implemented")
-    }
 
-    override fun onDeleteClick(position: Int) {
-        try {
-            Log.e("tesst", "pos $position")
-            Log.e("tesst", "id ${adapter.getItemId(position)}")
-
-            val id = adapter.getItemId(position)
-            adapter.removeItem(position)
-            viewModel.deleteData(id)
-
-        } catch (e: Exception) {
-            Log.e("tesst", e.toString())
-        }
-    }
 }

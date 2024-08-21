@@ -1,20 +1,20 @@
-package com.example.progress
+package com.example.progress.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [DataModel::class], version = 1, exportSchema = false)
-abstract class DataDatabase : RoomDatabase() {
+@Database(entities = [ListModel::class], version = 1, exportSchema = false)
+abstract class ListDatabase : RoomDatabase() {
 
-    abstract fun dataDao(): MyDataDao
+    abstract fun listDao(): ListDao
 
     companion object {
         @Volatile
-        private var INSTANCE: DataDatabase? = null
+        private var INSTANCE: ListDatabase? = null
 
-        fun getDatabase(context: Context): DataDatabase{
+        fun getDatabase(context: Context): ListDatabase {
             val tempInstance = INSTANCE
             if(tempInstance != null) {
                 return tempInstance
@@ -22,15 +22,12 @@ abstract class DataDatabase : RoomDatabase() {
             synchronized(this){
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    DataDatabase::class.java,
-                    "data_database"
+                    ListDatabase::class.java,
+                    "list_database"
                 ).build()
                 INSTANCE = instance
                 return instance
             }
         }
-
-
     }
-
 }

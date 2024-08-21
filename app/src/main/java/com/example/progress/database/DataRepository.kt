@@ -1,4 +1,4 @@
-package com.example.progress
+package com.example.progress.database
 
 class DataRepository(private val myDataDao: MyDataDao) {
 

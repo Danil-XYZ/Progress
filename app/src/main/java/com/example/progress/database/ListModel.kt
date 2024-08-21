@@ -1,14 +1,13 @@
-package com.example.progress
+package com.example.progress.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.io.Serializable
 
 @Entity
-data class DataModel (
-    var date: String,
-    var weight: String,
-    var imageUri: String,
+data class ListModel (
+    val image: String,
+    val listId: Long,
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0
 ) : Serializable
